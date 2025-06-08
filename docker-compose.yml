@@ -15,7 +15,7 @@ services:
       DATABASE_URL: ${DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
     volumes:
-      - .:/app  # Monta o projeto para hot reload se desejado (remover em produção)
+      - .:/app  # Monta o projeto para hot reload se desejado
 
   db:
     image: postgres:13.3
