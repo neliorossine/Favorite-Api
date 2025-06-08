@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    command: uvicorn app.main:create_app --host 0.0.0.0 --port 8010  # Executa a app via factory pattern
+    ports:
+      - "8010:8010"
+    depends_on:
+      db:
+        condition: service_healthy  # Aguarda o banco estar pronto
+    env_file:
+      - .env  # Variáveis de ambiente (.env na raiz do projeto)
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      SECRET_KEY: ${SECRET_KEY}
+    volumes:
+      - .:/app  # Monta o projeto para hot reload se desejado (remover em produção)
+
+  db:
+    image: postgres:13.3
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: aiqfome
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d aiqfome"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    restart: always
+
+volumes:
+  postgres_data:

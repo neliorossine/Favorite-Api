@@ -1,0 +1,15 @@
+fastapi==0.95.0
+uvicorn[standard]==0.21.0
+SQLAlchemy==2.0.12
+asyncpg>=0.27.0,<0.31.0
+pydantic[email]==1.10.2
+httpx==0.24.1
+python-dotenv==0.21.0
+passlib[bcrypt]==1.7.4
+python-jose==3.3.0
+alembic==1.10.2
+pytest==7.4.4
+pytest-asyncio==0.20.3
+pytest-mock==3.10.0
+redis>=4.5.0
+gunicorn[uvicorn]==20.1.0

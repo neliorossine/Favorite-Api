@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Caches e Logs
+.cache/
+*.log
+*.sqlite3
+
+# Ambientes Virtuais
+.env
+.venv/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs
+.vscode/
+
+# Pytest
+htmlcov/
+.pytest_cache/
+.coverage
+
+# Redis / Banco
+dump.rdb
+*.pid
+*.db
+*.sock
+logs/
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
