@@ -72,7 +72,7 @@ class FavoriteOut(FavoriteBase):
     id: int = Field(..., example=10)
     title: str = Field(..., example="Fjallraven - Foldsack No. 1 Backpack, Fits 15 Laptops")
     image: str = Field(..., example="https://fakestoreapi.com/img/81fPKd-2AYL._AC_SL1500_.jpg")
-    price: float = Field(..., example=109.95)  # Agora alinhado ao modelo (float)
+    price: float = Field(..., example=109.95)
     review: Optional[str] = Field(None, example="4.5")
 
     class Config:
