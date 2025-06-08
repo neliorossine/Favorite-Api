@@ -18,9 +18,9 @@ def create_app() -> FastAPI:
         ),
         version="1.0.0",
         contact={
-            "name": "Nélio Oliveira",
+            "name": "Nélio Rossine de Oliveira",
             "url": "https://github.com/neliorossine",
-            "email": "nelio.oliveira@exemplo.com",
+            "email": "junior.rossine@outlook.com",
         },
         license_info={
             "name": "MIT",
