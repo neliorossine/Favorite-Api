@@ -62,7 +62,7 @@ class FavoriteCreate(FavoriteBase):
     """
     Esquema para criação de um favorito.
     """
-    pass  # Não há campos adicionais
+    pass
 
 
 class FavoriteOut(FavoriteBase):
