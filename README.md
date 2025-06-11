@@ -5,9 +5,9 @@ API RESTful para gerenciamento de produtos favoritos por cliente.
 <br>
 <br>
 <br>
- 
 
-> 📌 **Versão com RabbitMQ e GraphQL disponível na branch [`favorite_api_v2`](https://github.com/neliorossine/favorite_api/tree/favorite_api_v2)**
+
+> 📌 **Versão com RabbitMQ e GraphQL disponível na branch [`favorite_api_v2`](https://github.com/neliorossine/Favorite-Api/tree/favorite_api_v2)**
 
 
 <br>
