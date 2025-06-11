@@ -20,24 +20,6 @@ services:
     volumes:
       - .:/app
 
-  # Worker assíncrono que consome mensagens do RabbitMQ
-  consumer:
-    build: .
-    command: python app/queue/consumer.py
-    depends_on:
-      db:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_started
-    env_file:
-      - .env
-    environment:
-      PYTHONPATH: /app
-      DATABASE_URL: ${DATABASE_URL}
-      RABBITMQ_URL: ${RABBITMQ_URL}
-    volumes:
-      - .:/app
-
   # Banco de dados PostgreSQL
   db:
     image: postgres:13.3
@@ -72,6 +54,29 @@ services:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
     restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Worker assíncrono que consome mensagens do RabbitMQ
+  consumer:
+    build: .
+    command: python app/queue/consumer.py
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - .:/app
 
 volumes:
   postgres_data:
