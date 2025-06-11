@@ -1,248 +1,100 @@
-# Favorite API
-<br>
-API RESTful para gerenciamento de produtos favoritos por cliente.
+# Favorite API v2
 
-<br>
-
-> 📌 **Versão com RabbitMQ e GraphQL disponível na branch [`favorite_api_v2`](https://github.com/neliorossine/favorite_api/tree/favorite_api_v2)**
-
-
-<br>
-
----
-<br>
-
-### ✨ Funcionalidades
-
-<br>
-
-- ✅ Cadastro e autenticação de usuários (JWT)
-- ✅ CRUD de clientes (nome e e-mail únicos)
-- ✅ Adição e listagem de produtos favoritos por cliente
-- ✅ Integração com API externa [`FakeStoreAPI`](https://fakestoreapi.com)
-- ✅ Cache com Redis para melhorar performance
-- ✅ Proteção com autenticação (JWT Bearer Token)
-- ✅ Testes automatizados com `pytest` e `httpx`
-- ✅ Documentação automática via Swagger/OpenAPI
-
-<br>
+API RESTful e GraphQL para gerenciamento de **produtos favoritos por cliente**, com suporte a mensageria via RabbitMQ. Esta versão é uma evolução da branch `main`.
 
 ---
 
-<br>
+## ✨ Funcionalidades Adicionais da `favorite_api_v2`
 
-### 🛠️ Tecnologias Utilizadas
-
-<br>
-
-- **Python 3.11**
-- **FastAPI**
-- **PostgreSQL**
-- **Docker & Docker Compose**
-- **Redis (cache)**
-- **SQLAlchemy**
-- **JWT**
-- **Pytest**
-
-<br>
+- ✅ Rota assíncrona de favoritos via RabbitMQ
+- ✅ Integração com fila RabbitMQ (`favorites_queue`)
+- ✅ Consumer assíncrono para processar os favoritos
+- ✅ Suporte a GraphQL via Strawberry
+- ✅ Schema GraphQL com consulta de favoritos enriquecidos
+- ✅ Testes da fila com fallback (sem depender do Rabbit em testes)
 
 ---
-<br>
 
-### 🚀 Como Executar o Projeto
-
-<br>
-
-### ✅ Requisitos
-
-- Docker + Docker Compose
-
-<br>
-
-### ▶️ Subir a aplicação com Docker
+## 🚀 Como Executar
 
 ```bash
-git clone https://github.com/neliorossine/favorite_api.git
-cd favorite_api
-
-# Crie o arquivo de variáveis
-cp .env.example .env
-
-# Suba todos os serviços
+git checkout favorite_api_v2
 docker-compose up --build
 ```
 
-<br>
+Acesse:
+
+- Swagger UI: http://localhost:8010/docs
+- GraphQL Playground: http://localhost:8010/graphql
 
 ---
 
+## 📦 Endpoints Adicionais
 
-<br>
+### 📨 Favoritos via RabbitMQ
 
+- `POST /api/v1/favorites-rabbit/{client_id}` – Envia favorito para a fila RabbitMQ
 
-### 🔐 Autenticação
+> Essa rota publica na fila `favorites_queue`. O consumidor recebe e salva no banco de forma assíncrona.
 
-<br>
+### 🔮 GraphQL
 
-- Registre um novo usuário via: `POST /api/v1/auth/signup`
-- Faça login via: `POST /api/v1/auth/login`
-- Use o token JWT no header das rotas protegidas:
+- `POST /graphql` – Consulta de favoritos via GraphQL
 
+```graphql
+query {
+  favorites(clientId: 1) {
+    productId
+    title
+    price
+    review
+  }
+}
 ```
-Authorization: Bearer <seu_token>
-```
-
-
-<br>
 
 ---
 
+## ✅ Testes Automatizados
 
-<br>
+Testes adicionados:
 
-### 📦 Endpoints Principais
-
-<br>
-
-### 📁 Clientes
-
-- `POST /clients/` – Criação de cliente
-- `GET /clients/` – Listagem
-- `PUT /clients/{id}` – Atualização
-- `DELETE /clients/{id}` – Remoção
-
-<br>
-
-### ❤️ Favoritos
-
-- `POST /favorites/` – Adiciona produto à lista de favoritos
-- `GET /favorites/{client_id}` – Lista favoritos de um cliente
-
-> Produtos duplicados não são permitidos. A API valida a existência do produto via [FakeStoreAPI](https://fakestoreapi.com).
-
-<br>
-
-### 🛒 Produtos
-
-- `GET /products/` – Lista todos os produtos
-- `GET /products/{id}` – Detalhes de um produto específico
-
-<br>
+- Teste completo da rota RabbitMQ com fallback
+- Integração da fila com o banco de dados
+- Testes de GraphQL com consulta de favoritos
 
 ---
 
-<br>
-
-### 🛍️ Exemplo de Requisição: Adicionar Produto Favorito
-
-<br>
+## 🧩 Estrutura Adicional
 
 ```
-curl -X POST http://localhost:8010/api/v1/favorites \
-  -H "Authorization: Bearer <TOKEN>" \
-  -H "Content-Type: application/json" \
-  -d '{"client_id": 1, "product_id": 5}'
-```
-
-<br>
-
----
-
-<br>
-
-
-### ✅ Rodando os Testes
-
-<br>
-
-```bash
-pytest -v
-```
-
-<br>
-
-
-Testes incluídos:
-
-- Autenticação (`test_auth.py`)
-- CRUD de clientes (`test_clients.py`)
-- Favoritos (criação, duplicidade, listagem) (`test_favorites.py`)
-- Produtos (visualização, listagem) (`test_products.py`)
-
-<br>
-
----
-
-<br>
-
-### 📦 Estrutura do Projeto
-
-<br>
-
-
-```
-favorite_api/
 ├── app/
-│   ├── main.py                          # Entrada principal da API
-│   ├── api/v1/                          # Rotas organizadas por versão
-│   │   ├── auth.py
-│   │   ├── clients.py
-│   │   ├── favorites.py
-│   │   └── products.py
-│   ├── core/                            # Config, segurança, cache e DB
-│   │   ├── config.py
-│   │   ├── security.py
-│   │   ├── database.py
-│   │   └── cache.py                     # Redis
-│   ├── crud/                            # Regras de negócio
-│   │   ├── client.py
-│   │   ├── favorite.py
-│   │   └── product.py
-│   ├── models/                          # ORM SQLAlchemy
-│   │   └── models.py
-│   └── schemas/                         # Schemas Pydantic
-│       └── schemas.py
-├── tests/                               # Testes organizados por domínio
-│   ├── test_auth.py
-│   ├── test_clients.py
-│   ├── test_favorites.py
-│   ├── test_products.py
-│   └── conftest.py                      # Fixtures
-├── Dockerfile                           # Imagem com wait-for-it + Uvicorn
-├── docker-compose.yml                   # API + DB PostgreSQL + Redis
-├── requirements.txt                     # Dependências
-├── .env / .env.example                  # Variáveis ambiente
-├── README.md                            
+│   ├── api/v1/
+│   │   └── favorites_rabbit.py         # Nova rota assíncrona via fila
+│   ├── queue/
+│   │   ├── producer.py                 # Publica na fila RabbitMQ
+│   │   └── consumer.py                 # Worker assíncrono que escuta e salva
+│   ├── graphql/
+│   │   └── schema.py                   # Schema GraphQL via Strawberry
+│   ├── tests/
+│   │   └── test_favorites_rabbit.py    # Teste da nova rota assíncrona via fila
 ```
 
-<br>
+---
+
+## 🧠 Observações Técnicas
+
+- A fila `favorites_queue` é declarada automaticamente no producer e consumer.
+- O teste de integração `test_favorites_rabbit.py` usa `pytest` e `httpx`, com `sleep()` para aguardar o worker.
+- GraphQL usa `strawberry.fastapi.GraphQLRouter` com schema separado.
 
 ---
 
-<br>
+## 📌 Observação
 
+Esta branch é ideal para contextos onde:
 
-### 📌 Decisões Técnicas
-
-<br>
-
-- Redis: utilizado como cache para melhorar a performance e reduzir chamadas repetidas à API externa de produtos.
-- JWT: autenticação segura baseada em tokens com tempo de expiração e validação em todas as rotas protegidas.
-- Arquitetura modular e escalável: separação clara por domínios (clients, favorites, products) seguindo boas práticas de organização.
-- Segurança: rotas protegidas utilizando Depends(get_current_user) e validação robusta do token JWT.
-- API Externa resiliente: integração com a FakeStoreAPI para validação de produtos, com fallback opcional para garantir disponibilidade em caso de falha da API externa.
-
-<br>
+- Há necessidade de processamento assíncrono com filas
+- Integração com múltiplos sistemas (ex: eventos de favoritos)
+- Consultas otimizadas via GraphQL para frontends modernos
 
 ---
-
-<br>
-
-### 🔀 Outras Versões / Funcionalidades Extras
-A branch favorite_api_v2 estende a API original com os seguintes recursos:
-
-- Mensageria com RabbitMQ: rota assíncrona /api/v1/favorites-rabbit/{client_id} que publica favoritos em fila para processamento posterior.
-
-- Suporte a GraphQL: rota /graphql (GraphiQL Playground) usando Strawberry para consultas avançadas.
-
-- Validação completa: prevenção de duplicatas e fallback em caso de falha externa, mesmo em cenários assíncronos.
