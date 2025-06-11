@@ -60,7 +60,7 @@ Acesse:
 
 ### 🔮 GraphQL
 
-- `[http://0.0.0.0:8010/graphql](http://0.0.0.0:8010/graphql)` – Consulta de favoritos via GraphQL
+- Consulta de favoritos via GraphQL – [`http://0.0.0.0:8010/graphql`](http://0.0.0.0:8010/graphql)
 
 ```graphql
 query {
@@ -139,4 +139,4 @@ Esta branch é ideal para contextos onde:
 
 <br>
 
-💡 Para detalhes da versão original RESTful, veja a branch main.
+💡 Para detalhes da versão original RESTful, veja a branch [`main`](https://github.com/neliorossine/Favorite-Api/tree/main).
