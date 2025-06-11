@@ -142,3 +142,15 @@ async def remove_favorite(db: AsyncSession, client_id: int, product_id: int) -> 
     await db.commit()
     logger.info(f"Produto {product_id} removido dos favoritos do cliente {client_id}.")
     return True
+
+async def is_favorite_registered(db: AsyncSession, client_id: int, product_id: int) -> bool:
+    """
+    Verifica se o produto já foi favoritado por esse cliente.
+    """
+    result = await db.execute(
+        select(Favorite).where(
+            Favorite.client_id == client_id,
+            Favorite.product_id == product_id
+        )
+    )
+    return result.scalars().first() is not None

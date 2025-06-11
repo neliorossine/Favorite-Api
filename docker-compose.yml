@@ -1,30 +1,52 @@
 version: '3.8'
 
 services:
+
+  # API FastAPI
   api:
     build: .
-    command: uvicorn app.main:create_app --host 0.0.0.0 --port 8010  # Executa a app via factory pattern
+    command: uvicorn app.main:create_app --host 0.0.0.0 --port 8010
     ports:
       - "8010:8010"
     depends_on:
       db:
-        condition: service_healthy  # Aguarda o banco estar pronto
+        condition: service_healthy
     env_file:
-      - .env  # Variáveis de ambiente (.env na raiz do projeto)
+      - .env
     environment:
       DATABASE_URL: ${DATABASE_URL}
       SECRET_KEY: ${SECRET_KEY}
+      RABBITMQ_URL: ${RABBITMQ_URL}
     volumes:
-      - .:/app  # Monta o projeto para hot reload se desejado (remover em produção)
+      - .:/app
 
+  # Worker assíncrono que consome mensagens do RabbitMQ
+  consumer:
+    build: .
+    command: python app/queue/consumer.py
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    env_file:
+      - .env
+    environment:
+      PYTHONPATH: /app
+      DATABASE_URL: ${DATABASE_URL}
+      RABBITMQ_URL: ${RABBITMQ_URL}
+    volumes:
+      - .:/app
+
+  # Banco de dados PostgreSQL
   db:
     image: postgres:13.3
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: aiqfome
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -33,10 +55,22 @@ services:
       timeout: 5s
       retries: 5
 
+  # Redis opcional (para cache ou filas futuras)
   redis:
     image: redis:7-alpine
     ports:
       - "6379:6379"
+    restart: always
+
+  # RabbitMQ com interface de gerenciamento
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     restart: always
 
 volumes:

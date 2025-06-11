@@ -1,24 +1,37 @@
-# Usando uma imagem slim do Python
+# Imagem base leve com Python 3.11
 FROM python:3.11-slim
 
-# Definindo o diretório de trabalho
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Copiando apenas o requirements.txt primeiro para otimizar o cache de dependências
+# Evita prompt de timezone/locales
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
+
+# Instala dependências do sistema necessárias
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copia apenas o requirements.txt para aproveitar cache de build
 COPY requirements.txt .
 
-# Instalando as dependências
-RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
+# Instala dependências do Python
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Copiando o restante dos arquivos da aplicação
+# Copia o restante da aplicação
 COPY . .
 
-# Copiando o script wait-for-it.sh e garantindo permissões
+# Copia o script de espera por serviços (e dá permissão)
 COPY wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
-# Expondo a porta da API
+# Expondo porta da API FastAPI
 EXPOSE 8010
 
-# Comando de inicialização com factory
+# Comando de inicialização (aguarda banco antes de iniciar a API)
 CMD ["/wait-for-it.sh", "db:5432", "--", "uvicorn", "app.main:create_app", "--factory", "--host", "0.0.0.0", "--port", "8010"]

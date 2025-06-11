@@ -1,21 +1,23 @@
 import os
 from dotenv import load_dotenv
 
-# Força o uso do SQLite em memória para testes
-os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
-
-# Carrega variáveis de ambiente de um arquivo alternativo (.env.dev)
+# Carrega .env.dev primeiro
 dotenv_path = os.path.join(os.path.dirname(__file__), "..", ".env.dev")
 load_dotenv(dotenv_path=dotenv_path, override=True)
+
+# Força o uso de SQLite em memória para testes
+os.environ["DATABASE_URL"] = "sqlite+aiosqlite:///:memory:"
+DATABASE_URL = os.environ["DATABASE_URL"]
 
 import pytest_asyncio
 from httpx import AsyncClient
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
+
+# Agora sim importa os módulos internos com DATABASE_URL correto
 from app.main import create_app
 from app.core.database import Base
 
-# Configuração do banco assíncrono para testes
-DATABASE_URL = os.getenv("DATABASE_URL")
+# Configuração do engine e session para testes
 engine = create_async_engine(DATABASE_URL, echo=False, future=True)
 async_session = async_sessionmaker(engine, expire_on_commit=False)
 
@@ -23,10 +25,9 @@ async_session = async_sessionmaker(engine, expire_on_commit=False)
 @pytest_asyncio.fixture(scope="function")
 async def prepare_db():
     """
-    Fixture para preparar o banco de dados antes de cada teste.
-    Garante que as tabelas estejam criadas e limpas.
+    Prepara o banco SQLite para cada teste com tabelas limpas.
     """
-    import app.models.models  # Garante que Client e Favorite sejam registrados no Base
+    import app.models.models  # Garante que os modelos sejam registrados
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -38,7 +39,7 @@ async def prepare_db():
 @pytest_asyncio.fixture()
 async def db_session() -> AsyncSession:
     """
-    Fixture que fornece uma sessão de banco assíncrona para testes.
+    Retorna uma sessão assíncrona do banco de testes.
     """
     async with async_session() as session:
         yield session
@@ -47,7 +48,7 @@ async def db_session() -> AsyncSession:
 @pytest_asyncio.fixture(scope="function")
 async def client(prepare_db):
     """
-    Fixture que retorna um cliente HTTP para testes, com banco preparado.
+    Cliente HTTP com banco limpo para cada teste.
     """
     app = create_app()
     async with AsyncClient(app=app, base_url="http://test") as ac:

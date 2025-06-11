@@ -1,10 +1,20 @@
 # Favorite API
+<br>
+API RESTful para gerenciamento de produtos favoritos por cliente.
 
-API RESTful para gerenciamento de **produtos favoritos por cliente**, desenvolvida para o desafio técnico Magazine Luiza / Aiqfome.
+<br>
+
+> 📌 **Versão com RabbitMQ e GraphQL disponível na branch [`favorite_api_v2`](https://github.com/neliorossine/favorite_api/tree/favorite_api_v2)**
+
+
+<br>
 
 ---
+<br>
 
-## ✨ Funcionalidades
+### ✨ Funcionalidades
+
+<br>
 
 - ✅ Cadastro e autenticação de usuários (JWT)
 - ✅ CRUD de clientes (nome e e-mail únicos)
@@ -15,9 +25,15 @@ API RESTful para gerenciamento de **produtos favoritos por cliente**, desenvolvi
 - ✅ Testes automatizados com `pytest` e `httpx`
 - ✅ Documentação automática via Swagger/OpenAPI
 
+<br>
+
 ---
 
-## 🛠️ Tecnologias Utilizadas
+<br>
+
+### 🛠️ Tecnologias Utilizadas
+
+<br>
 
 - **Python 3.11**
 - **FastAPI**
@@ -28,13 +44,20 @@ API RESTful para gerenciamento de **produtos favoritos por cliente**, desenvolvi
 - **JWT**
 - **Pytest**
 
----
+<br>
 
-## 🚀 Como Executar o Projeto
+---
+<br>
+
+### 🚀 Como Executar o Projeto
+
+<br>
 
 ### ✅ Requisitos
 
 - Docker + Docker Compose
+
+<br>
 
 ### ▶️ Subir a aplicação com Docker
 
@@ -49,9 +72,17 @@ cp .env.example .env
 docker-compose up --build
 ```
 
+<br>
+
 ---
 
-## 🔐 Autenticação
+
+<br>
+
+
+### 🔐 Autenticação
+
+<br>
 
 - Registre um novo usuário via: `POST /api/v1/auth/signup`
 - Faça login via: `POST /api/v1/auth/login`
@@ -61,10 +92,17 @@ docker-compose up --build
 Authorization: Bearer <seu_token>
 ```
 
+
+<br>
+
 ---
 
 
-## 📦 Endpoints Principais
+<br>
+
+### 📦 Endpoints Principais
+
+<br>
 
 ### 📁 Clientes
 
@@ -73,6 +111,8 @@ Authorization: Bearer <seu_token>
 - `PUT /clients/{id}` – Atualização
 - `DELETE /clients/{id}` – Remoção
 
+<br>
+
 ### ❤️ Favoritos
 
 - `POST /favorites/` – Adiciona produto à lista de favoritos
@@ -80,14 +120,22 @@ Authorization: Bearer <seu_token>
 
 > Produtos duplicados não são permitidos. A API valida a existência do produto via [FakeStoreAPI](https://fakestoreapi.com).
 
+<br>
+
 ### 🛒 Produtos
 
 - `GET /products/` – Lista todos os produtos
 - `GET /products/{id}` – Detalhes de um produto específico
 
+<br>
+
 ---
 
-## 🛍️ Exemplo de Requisição: Adicionar Produto Favorito
+<br>
+
+### 🛍️ Exemplo de Requisição: Adicionar Produto Favorito
+
+<br>
 
 ```
 curl -X POST http://localhost:8010/api/v1/favorites \
@@ -96,15 +144,23 @@ curl -X POST http://localhost:8010/api/v1/favorites \
   -d '{"client_id": 1, "product_id": 5}'
 ```
 
+<br>
 
 ---
 
+<br>
 
-## ✅ Rodando os Testes
+
+### ✅ Rodando os Testes
+
+<br>
 
 ```bash
 pytest -v
 ```
+
+<br>
+
 
 Testes incluídos:
 
@@ -113,9 +169,16 @@ Testes incluídos:
 - Favoritos (criação, duplicidade, listagem) (`test_favorites.py`)
 - Produtos (visualização, listagem) (`test_products.py`)
 
+<br>
+
 ---
 
-## 📦 Estrutura do Projeto
+<br>
+
+### 📦 Estrutura do Projeto
+
+<br>
+
 
 ```
 favorite_api/
@@ -152,9 +215,16 @@ favorite_api/
 ├── README.md                            
 ```
 
+<br>
+
 ---
 
-## 📌 Decisões Técnicas
+<br>
+
+
+### 📌 Decisões Técnicas
+
+<br>
 
 - Redis: utilizado como cache para melhorar a performance e reduzir chamadas repetidas à API externa de produtos.
 - JWT: autenticação segura baseada em tokens com tempo de expiração e validação em todas as rotas protegidas.
@@ -162,9 +232,17 @@ favorite_api/
 - Segurança: rotas protegidas utilizando Depends(get_current_user) e validação robusta do token JWT.
 - API Externa resiliente: integração com a FakeStoreAPI para validação de produtos, com fallback opcional para garantir disponibilidade em caso de falha da API externa.
 
+<br>
+
 ---
 
-## 🤝 Autor
+<br>
 
-Desenvolvido por Nélio Rossine de Oliveira — desafio técnico Magazine Luiza (2025).
+### 🔀 Outras Versões / Funcionalidades Extras
+A branch favorite_api_v2 estende a API original com os seguintes recursos:
 
+- Mensageria com RabbitMQ: rota assíncrona /api/v1/favorites-rabbit/{client_id} que publica favoritos em fila para processamento posterior.
+
+- Suporte a GraphQL: rota /graphql (GraphiQL Playground) usando Strawberry para consultas avançadas.
+
+- Validação completa: prevenção de duplicatas e fallback em caso de falha externa, mesmo em cenários assíncronos.
