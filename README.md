@@ -1,7 +1,15 @@
 # Favorite API
 <br>
-API RESTful para gerenciamento de **produtos favoritos por cliente**, desenvolvida para o desafio técnico Magazine Luiza / Aiqfome.
+API RESTful para gerenciamento de produtos favoritos por cliente.
+
 <br>
+<br>
+<br>
+ 
+
+> 📌 **Versão com RabbitMQ e GraphQL disponível na branch [`favorite_api_v2`](https://github.com/neliorossine/favorite_api/tree/favorite_api_v2)**
+
+
 <br>
 
 ---
@@ -233,7 +241,11 @@ favorite_api/
 
 <br>
 
-### 🤝 Autor
+### 🔀 Outras Versões / Funcionalidades Extras
+A branch favorite_api_v2 estende a API original com os seguintes recursos:
 
-Desenvolvido por Nélio Rossine de Oliveira — desafio técnico Magazine Luiza (2025).
+- Mensageria com RabbitMQ: rota assíncrona /api/v1/favorites-rabbit/{client_id} que publica favoritos em fila para processamento posterior.
 
+- Suporte a GraphQL: rota /graphql (GraphiQL Playground) usando Strawberry para consultas avançadas.
+
+- Validação completa: prevenção de duplicatas e fallback em caso de falha externa, mesmo em cenários assíncronos.
